@@ -25,7 +25,7 @@ router.get('/:oathId', (req, res) => {
 router.get('/', (req, res) => {
   Oath.find({ userID: req.user })
     .then((oaths) => {
-      req.status(200).send(oaths);
+      res.status(200).send(oaths);
     }).catch((err) => {
       console.log(err);
       res.status(400).send(err);
@@ -90,7 +90,7 @@ router.put('/:oathId/:newUserId', (req, res) => {
 
 router.delete('/:oathId', (req, res) => {
   Oath.findById(req.params.oathId)
-    .populate('users')
+    .populate('userID')
     .then((oath) => {
       if (oath) {
         for (let i = 0; i < oath.users.length; i += 1) {
