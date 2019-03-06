@@ -17,12 +17,9 @@ app.use(cors());
 // My auth middleware
 const checkAuth = (req, res, next) => {
   if (typeof req.cookies.lovaToken === 'undefined' || req.cookies.lovaToken === null) {
-    console.log('no cookie');
     // eslint-disable-next-line no-param-reassign
     req.user = null;
   } else {
-    console.log('found cookie');
-
     const token = req.cookies.lovaToken;
     const decodedToken = jwt.decode(token, {
       complete: true

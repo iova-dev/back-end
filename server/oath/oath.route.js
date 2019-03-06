@@ -34,11 +34,9 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const newOath = new Oath(req.body);
-  console.log(req.user);
-
   User.findById(req.user)
     .then((user) => {
-      newOath.user = user._id;
+      newOath.userID = user._id;
       newOath.save()
         .then((oath) => {
           user.oaths.unshift(oath);
