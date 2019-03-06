@@ -22,18 +22,28 @@ router.get('/:oathId', (req, res) => {
     });
 });
 
+router.get('/', (req, res) => {
+  Oath.find({userID: req.user})
+    .then((oaths) => {
+      req.status(200).send(oaths);
+    }).catch((err) => {
+      console.log(err);
+      res.status(400).send(err)
+    })
+})
+
 router.post('/', (req, res) => {
-  const newPromise = new Promise(req.body);
-  User.findById(req.params.userId)
+  const newOath = new Oath(req.body);
+  User.findById(req.user)
     .then((user) => {
-      newPromise.users = [user._id];
-      newPromise.save()
-        .then((promise) => {
-          user.promises.unshift(promise);
-          user.markModified('promises');
+      newOath.user = user._id;
+      newOath.save()
+        .then((oath) => {
+          user.oaths.unshift(oath);
+          user.markModified('oaths');
           user.save()
             .then(() => {
-              res.status(200).send(user);
+              res.status(200).send(oath);
             }).catch((err) => {
               console.error(err);
               res.status(400).send(err);
@@ -48,22 +58,22 @@ router.post('/', (req, res) => {
     });
 });
 
-router.put('/:promiseId/:newUserId', (req, res) => {
+router.put('/:oathId/:newUserId', (req, res) => {
   User.findById(req.params.newDirectorId)
     .then((newUser) => {
       if (newUser) {
-        Promise.findById(req.params.promiseId)
-          .then((promise) => {
-            if (promise) {
-              promise.users.unshift(newUser);
-              promise.markModified('users');
-              promise.save();
-              newUser.promises.unshift(promise);
-              newUser.markModified('promises');
+        oath.findById(req.params.oathId)
+          .then((oath) => {
+            if (oath) {
+              oath.users.unshift(newUser);
+              oath.markModified('users');
+              oath.save();
+              newUser.oaths.unshift(oath);
+              newUser.markModified('oaths');
               newUser.save();
-              res.status(200).send(promise);
+              res.status(200).send(oath);
             } else {
-              throw new Error('Promise doesn\'t exist');
+              throw new Error('oath doesn\'t exist');
             }
           }).catch((err) => {
             console.error(err);
@@ -78,25 +88,25 @@ router.put('/:promiseId/:newUserId', (req, res) => {
     });
 });
 
-router.delete('/:promiseId', (req, res) => {
-  Promise.findById(req.params.promiseId)
+router.delete('/:oathId', (req, res) => {
+  oath.findById(req.params.oathId)
     .populate('users')
-    .then((promise) => {
-      if (promise) {
-        for (let i = 0; i < promise.users.length; i += 1) {
-          const editPromise = promise;
-          editPromise.users[i].promises =
-            promise.users[i].promises.filter(filterPromise => filterPromise._id !== promise._id);
-          promise.markModified('users');
-          promise.save();
+    .then((oath) => {
+      if (oath) {
+        for (let i = 0; i < oath.users.length; i += 1) {
+          const editoath = oath;
+          editoath.users[i].oaths =
+            oath.users[i].oaths.filter(filteroath => filteroath._id !== oath._id);
+          oath.markModified('users');
+          oath.save();
         }
-        return Promise.findOneAndRemove({
-          id: promise._id
+        return oath.findOneAndRemove({
+          id: oath._id
         });
       }
-      throw new Error('Could not find promise');
-    }).then((promise) => {
-      res.status(200).send(promise);
+      throw new Error('Could not find oath');
+    }).then((oath) => {
+      res.status(200).send(oath);
     })
     .cathc((err) => {
       console.error(err);
