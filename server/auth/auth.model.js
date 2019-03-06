@@ -11,7 +11,12 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  oaths: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Oath',
+    default: [],
+  }]
 });
 
 userSchema.pre('save', function preSave(next) {
