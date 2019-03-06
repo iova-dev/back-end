@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 // My auth middleware
-const checkAuth =(req, res, next) => {
+const checkAuth = (req, res, next) => {
   if (typeof req.cookies.lovaToken === 'undefined' || req.cookies.lovaToken === null) {
     console.log('no cookie');
     // eslint-disable-next-line no-param-reassign
